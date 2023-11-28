@@ -11,7 +11,7 @@ import "./Criptopunks-WrappedV1Strategy.sol";
 contract Cryptopunks is
     ZetaInteractor,
     ZetaReceiver,
-    ERC721("Cryptopunks Zeta", "ZCP"),
+    ERC721("Omnichain Cryptopunks", "OCP"),
     CriptopunksPunkStrategy,
     CriptopunksWrappedV1Strategy
 {
