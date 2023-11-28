@@ -7,6 +7,8 @@ import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.so
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./PunksV1Contract.sol";
 
+import "hardhat/console.sol";
+
 contract CriptopunksPunkStrategy {
     address payable public punkAddress = payable(0x6Ba6f2207e343923BA692e5Cae646Fb0F566DB8D);
 

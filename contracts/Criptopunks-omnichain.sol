@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./Criptopunks-PunkStrategy.sol";
 import "./Criptopunks-WrappedV1Strategy.sol";
 
+import "hardhat/console.sol";
+
 contract Cryptopunks is
     ZetaInteractor,
     ZetaReceiver,
@@ -62,7 +64,7 @@ contract Cryptopunks is
     }
 
     function wrap(uint punkId, PunkVersion punkVersion) external {
-        if (block.chainid != 1) revert InvalidChainId();
+        // if (block.chainid != 1) revert InvalidChainId();
         if (punkVersion == PunkVersion.Punk) wrapPunkStrategy(punkId);
         if (punkVersion == PunkVersion.WrappedV1) wrapWrappedV1Strategy(punkId);
         // Mint a wrapped punk
@@ -71,7 +73,7 @@ contract Cryptopunks is
     }
 
     function unwrap(uint256 punkId) external {
-        if (block.chainid != 1) revert InvalidChainId();
+        // if (block.chainid != 1) revert InvalidChainId();
         require(_isApprovedOrOwner(msg.sender, punkId));
         _burn(punkId);
         if (punks[punkId].punkVersion == PunkVersion.Punk) unwrapPunkStrategy(punkId);
