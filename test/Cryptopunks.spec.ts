@@ -32,6 +32,7 @@ describe("MultiChainValue tests", () => {
 
   beforeEach(async () => {
     [owner, friend, ...addrs] = await ethers.getSigners();
+    const currentChainId = await hre.ethers.provider.send("eth_chainId");
 
     const ZetaEthMock = await ethers.getContractFactory("ZetaEthMock");
     //@ts-ignore
@@ -50,14 +51,16 @@ describe("MultiChainValue tests", () => {
     cryptopunksChainA = await Cryptopunks.deploy(
       zetaConnectorMockContract.address,
       zetaEthMockContract.address,
-      zetaTokenConsumerMockContract.address
+      zetaTokenConsumerMockContract.address,
+      currentChainId
     );
 
     //@ts-ignore
     cryptopunksChainB = await Cryptopunks.deploy(
       zetaConnectorMockContract.address,
       zetaEthMockContract.address,
-      zetaTokenConsumerMockContract.address
+      zetaTokenConsumerMockContract.address,
+      currentChainId
     );
 
     const encodedCrossChainAddressA = ethers.utils.solidityPack(["address"], [cryptopunksChainA.address]);

@@ -34,6 +34,7 @@ contract Cryptopunks is
 
     mapping(uint => uint) tokenIds;
     mapping(uint => Punk) punks;
+    uint256 public baseChain;
 
     bytes32 public constant CRYPTO_PUNK_MESSAGE_TYPE = keccak256("CRYPTO_PUNK");
     ZetaTokenConsumer public _zetaConsumer;
@@ -44,11 +45,13 @@ contract Cryptopunks is
     constructor(
         address connectorAddress,
         address zetaTokenAddress,
-        address zetaConsumerAddress
+        address zetaConsumerAddress,
+        uint256 baseChain_
     ) ZetaInteractor(connectorAddress) {
         _zetaToken = IERC20(zetaTokenAddress);
         _zetaConsumer = ZetaTokenConsumer(zetaConsumerAddress);
         _baseTokenURI = "ipfs://Qma3sC19HbnWHqeLgcsQnR7Kvgus4oPQirXNH7QYBeACaq/";
+        baseChain = baseChain_;
     }
 
     function setTokenConsumer(address zetaConsumerAddress) external onlyOwner {
@@ -64,7 +67,7 @@ contract Cryptopunks is
     }
 
     function wrap(uint punkId, PunkVersion punkVersion) external {
-        // if (block.chainid != 1) revert InvalidChainId();
+        if (block.chainid != baseChain) revert InvalidChainId();
         if (punkVersion == PunkVersion.Punk) wrapPunkStrategy(punkId);
         if (punkVersion == PunkVersion.WrappedV1) wrapWrappedV1Strategy(punkId);
         // Mint a wrapped punk
@@ -73,7 +76,7 @@ contract Cryptopunks is
     }
 
     function unwrap(uint256 punkId) external {
-        // if (block.chainid != 1) revert InvalidChainId();
+        if (block.chainid != baseChain) revert InvalidChainId();
         require(_isApprovedOrOwner(msg.sender, punkId));
         _burn(punkId);
         if (punks[punkId].punkVersion == PunkVersion.Punk) unwrapPunkStrategy(punkId);
@@ -90,6 +93,7 @@ contract Cryptopunks is
     }
 
     function bridge(uint256 destinationChainId, uint256 punkId, address to, uint256 crossChainGas) external payable {
+        require(_isApprovedOrOwner(msg.sender, punkId));
         if (!_isValidChainId(destinationChainId)) revert InvalidDestinationChainId();
 
         // uint256 crossChainGas = 2 * (10 ** 18);
@@ -103,7 +107,7 @@ contract Cryptopunks is
                 destinationChainId: destinationChainId,
                 destinationAddress: interactorsByChainId[destinationChainId],
                 destinationGasLimit: 300000,
-                message: abi.encode(CRYPTO_PUNK_MESSAGE_TYPE, punkId, msg.sender, to),
+                message: abi.encode(CRYPTO_PUNK_MESSAGE_TYPE, punkId, msg.sender, to, baseChain),
                 zetaValueAndGas: zetaValueAndGas,
                 zetaParams: abi.encode("")
             })
@@ -113,11 +117,11 @@ contract Cryptopunks is
     function onZetaMessage(
         ZetaInterfaces.ZetaMessage calldata zetaMessage
     ) external override isValidMessageCall(zetaMessage) {
-        (bytes32 messageType, uint256 punkId, address sender, address to) = abi.decode(
+        (bytes32 messageType, uint256 punkId, address sender, address to, uint256 baseChain_) = abi.decode(
             zetaMessage.message,
-            (bytes32, uint256, address, address)
+            (bytes32, uint256, address, address, uint256)
         );
-
+        if (baseChain_ != baseChain) revert InvalidChainId();
         if (messageType != CRYPTO_PUNK_MESSAGE_TYPE) revert InvalidMessageType();
 
         _mintId(to, punkId);
