@@ -1,9 +1,9 @@
 {
-  "name": "@zetachain/zeta-app-contracts",
+  "name": "omnipunks",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
-  "author": "zetachain",
+  "author": "Andres Aiello",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"

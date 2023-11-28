@@ -1,6 +1,4 @@
-# ZetaChain App contracts
-
-This package include the contracts used by different ZetaChain Apps like ZetaHub
+# Omni Punks - Zetachain based Cryptopunks
 
 ## Environment variables
 
