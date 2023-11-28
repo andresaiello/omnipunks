@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@zetachain/protocol-contracts/contracts/evm/tools/ZetaInteractor.sol";
 import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "./Criptopunks-PunkStrategy.sol";
 import "./Criptopunks-WrappedV1Strategy.sol";
 
@@ -14,6 +15,7 @@ contract Cryptopunks is
     ZetaInteractor,
     ZetaReceiver,
     ERC721("Omnichain Cryptopunks", "OCP"),
+    IERC721Receiver,
     CriptopunksPunkStrategy,
     CriptopunksWrappedV1Strategy
 {
@@ -52,6 +54,18 @@ contract Cryptopunks is
         _zetaConsumer = ZetaTokenConsumer(zetaConsumerAddress);
         _baseTokenURI = "ipfs://Qma3sC19HbnWHqeLgcsQnR7Kvgus4oPQirXNH7QYBeACaq/";
         baseChain = baseChain_;
+    }
+
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes memory data
+    ) public override returns (bytes4) {
+        // Custom logic to handle the received NFT
+        // ...
+
+        return this.onERC721Received.selector;
     }
 
     function setTokenConsumer(address zetaConsumerAddress) external onlyOwner {
