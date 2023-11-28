@@ -1,0 +1,21 @@
+{
+  "include": [
+    "./scripts",
+    "./lib",
+    "./test",
+    "./tests",
+    "./typechain",
+    "./**/*.json",
+    "typechain-types"
+  ],
+  "exclude": [
+    "artifacts",
+    "cache"
+  ],
+  "files": [
+    "./hardhat.config.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}
