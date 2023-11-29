@@ -107,11 +107,24 @@ contract Cryptopunks is
     }
 
     function bridge(uint256 destinationChainId, uint256 punkId, address to, uint256 crossChainGas) external payable {
+        uint256 zetaValueAndGas = _zetaConsumer.getZetaFromEth{value: msg.value}(address(this), crossChainGas);
+        _bridge(destinationChainId, punkId, to, zetaValueAndGas);
+    }
+
+    function bridgeWithZETA(
+        uint256 destinationChainId,
+        uint256 punkId,
+        address to,
+        uint256 zetaValueAndGas
+    ) external payable {
+        _zetaToken.transferFrom(msg.sender, address(this), zetaValueAndGas);
+        _bridge(destinationChainId, punkId, to, zetaValueAndGas);
+    }
+
+    function _bridge(uint256 destinationChainId, uint256 punkId, address to, uint256 zetaValueAndGas) internal {
         require(_isApprovedOrOwner(msg.sender, punkId));
         if (!_isValidChainId(destinationChainId)) revert InvalidDestinationChainId();
 
-        // uint256 crossChainGas = 2 * (10 ** 18);
-        uint256 zetaValueAndGas = _zetaConsumer.getZetaFromEth{value: msg.value}(address(this), crossChainGas);
         _zetaToken.approve(address(connector), zetaValueAndGas);
 
         _burnPunk(punkId);
